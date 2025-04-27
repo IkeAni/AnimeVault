@@ -1,19 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, SafeAreaView } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import AnimeSearch from './components/AnimeSearch';
+import FavoritesScreen from './components/FavoritesScreen';
+import AnimeDetailsScreen from './components/AnimeDetailsScreen';
+
+const Stack = createStackNavigator();
+
 export default function App() {
   return (
-    <SafeAreaView style={styles.container}>
-      <AnimeSearch />
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="AnimeSearch">
+        <Stack.Screen name="AnimeSearch" component={AnimeSearch} />
+        <Stack.Screen name="Favorites" component={FavoritesScreen} />
+        <Stack.Screen name="AnimeDetails" component={AnimeDetailsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: 50,
-  },
-});

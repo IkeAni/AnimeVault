@@ -1,10 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Button, FlatList, StyleSheet, Alert } from 'react-native';
 import axios from 'axios';
+import AnimeCard from './AnimeCard';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // <- uusi import
 
 const AnimeSearch = () => {
   const [query, setQuery] = useState('');
   const [animeList, setAnimeList] = useState([]);
+  const navigation = useNavigation();
 
   const searchAnime = async () => {
     try {
@@ -15,28 +19,65 @@ const AnimeSearch = () => {
     }
   };
 
+  const addFavorite = async (anime) => {
+    try {
+      const storedFavorites = await AsyncStorage.getItem('favorites');
+      const favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+
+      const isAlreadyFavorite = favorites.some((fav) => fav.mal_id === anime.mal_id);
+      if (isAlreadyFavorite) {
+        Alert.alert('Huomio', 'Anime on jo suosikeissa.');
+        return;
+      }
+
+      const updatedFavorites = [...favorites, anime];
+      await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+
+      Alert.alert('Onnistui!', `${anime.title} lisätty suosikkeihin.`);
+    } catch (error) {
+      console.error('Virhe suosikin lisäämisessä:', error);
+    }
+  };
+
   return (
-    <View style={{ padding: 20 }}>
+    <View style={styles.container}>
+      <Button title="Näytä Suosikit" onPress={() => navigation.navigate('Favorites')} />
+
       <TextInput
         placeholder="Etsi anime..."
         value={query}
         onChangeText={setQuery}
-        style={{ borderWidth: 1, padding: 10, marginBottom: 10 }}
+        style={styles.input}
       />
       <Button title="Hae" onPress={searchAnime} />
-      
+
       <FlatList
         data={animeList}
-        keyExtractor={(item) => item.mal_id.toString()}
+        keyExtractor={(item, index) => item.mal_id.toString() + index.toString()}
         renderItem={({ item }) => (
-          <View style={{ marginVertical: 10 }}>
-            <Image source={{ uri: item.images.jpg.image_url }} style={{ width: 100, height: 150 }} />
-            <Text>{item.title}</Text>
-          </View>
+          <AnimeCard
+            title={item.title}
+            animeId={item.mal_id}
+            imageUrl={item.images.jpg.image_url}
+            onAddFavorite={() => addFavorite(item)}
+          />
         )}
       />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+    flex: 1,
+  },
+  input: {
+    borderWidth: 1,
+    padding: 10,
+    marginVertical: 10,
+    borderRadius: 8,
+  },
+});
 
 export default AnimeSearch;
