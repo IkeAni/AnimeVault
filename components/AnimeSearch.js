@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, StyleSheet, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
+import { View, TextInput, FlatList, StyleSheet, ActivityIndicator, Text } from 'react-native';
 import axios from 'axios';
 import AnimeCard from './AnimeCard';
-import { useNavigation, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AnimeSearch = () => {
   const [query, setQuery] = useState('');
   const [animeList, setAnimeList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const navigation = useNavigation();
   const { colors } = useTheme();
 
   const searchAnime = async () => {
@@ -52,13 +51,6 @@ const AnimeSearch = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <TouchableOpacity
-        style={[styles.favoritesButton, { backgroundColor: colors.primary }]}
-        onPress={() => navigation.navigate('Favorites')}
-      >
-        <Text style={styles.favoritesButtonText}>View Favorites</Text>
-      </TouchableOpacity>
-
       <TextInput
         placeholder="Search anime..."
         placeholderTextColor="#888"
@@ -68,13 +60,6 @@ const AnimeSearch = () => {
         onSubmitEditing={searchAnime}
         returnKeyType="search"
       />
-
-      <TouchableOpacity
-        style={[styles.searchButton, { backgroundColor: colors.primary }]}
-        onPress={searchAnime}
-      >
-        <Text style={styles.searchButtonText}>Search</Text>
-      </TouchableOpacity>
 
       {loading ? (
         <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 20 }} />
@@ -93,7 +78,8 @@ const AnimeSearch = () => {
           )}
           ListEmptyComponent={!loading && (
             <Text style={[styles.emptyText, { color: colors.text }]}>
-              {query ? 'No anime found.' : 'Start searching for anime!'}
+              {query ? 'No anime found.' : 'Start searching for anime!'
+              }
             </Text>
           )}
         />
@@ -112,29 +98,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 15,
     paddingVertical: 10,
-    marginBottom: 10,
-    fontSize: 16,
-  },
-  searchButton: {
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
     marginBottom: 20,
-  },
-  searchButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-  },
-  favoritesButton: {
-    paddingVertical: 10,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  favoritesButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
     fontSize: 16,
   },
   emptyText: {
@@ -145,5 +109,6 @@ const styles = StyleSheet.create({
 });
 
 export default AnimeSearch;
+
 
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useColorScheme, TouchableOpacity, View } from 'react-native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons';
+import { Ionicons, FontAwesome } from '@expo/vector-icons'; // icons
 import AnimeSearch from '../components/AnimeSearch';
 import FavoritesScreen from '../components/FavoritesScreen';
 import AnimeDetailsScreen from '../components/AnimeDetailsScreen';
@@ -10,7 +10,7 @@ import HomeScreen from '../components/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
-// Custom light theme
+// Custom themes
 const LightTheme = {
     ...DefaultTheme,
     colors: {
@@ -18,11 +18,10 @@ const LightTheme = {
         background: '#f3e5f5',
         card: '#ffffff',
         text: '#222222',
-        primary: '#222222', // soft black
+        primary: '#222222',
     },
 };
 
-// Custom dark theme
 const CustomDarkTheme = {
     ...DarkTheme,
     colors: {
@@ -34,8 +33,20 @@ const CustomDarkTheme = {
     },
 };
 
+// Common Header Right Icons
+const HeaderIcons = ({ navigation }) => (
+    <View style={{ flexDirection: 'row' }}>
+        <TouchableOpacity onPress={() => navigation.navigate('Search')} style={{ marginRight: 20 }}>
+            <Ionicons name="search" size={24} color="#fff" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('Favorites')} style={{ marginRight: 10 }}>
+            <FontAwesome name="heart" size={24} color="#fff" />
+        </TouchableOpacity>
+    </View>
+);
+
 const AppNavigator = () => {
-    const colorScheme = useColorScheme(); // detects dark/light mode
+    const colorScheme = useColorScheme();
 
     return (
         <NavigationContainer theme={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
@@ -53,36 +64,35 @@ const AppNavigator = () => {
                     component={HomeScreen}
                     options={({ navigation }) => ({
                         title: 'Anime Vault',
-                        headerRight: () => (
-                            <View style={{ flexDirection: 'row' }}>
-                                <TouchableOpacity onPress={() => navigation.navigate('Search')} style={{ marginRight: 20 }}>
-                                    <Ionicons name="search" size={24} color="#fff" />
-                                </TouchableOpacity>
-
-                                <TouchableOpacity onPress={() => navigation.navigate('Favorites')} style={{ marginRight: 10 }}>
-                                    <FontAwesome name="heart" size={24} color="#fff" />
-                                </TouchableOpacity>
-                            </View>
-                        ),
+                        headerRight: () => <HeaderIcons navigation={navigation} />,
                     })}
                 />
 
                 <Stack.Screen
                     name="Search"
                     component={AnimeSearch}
-                    options={{ title: 'Search Anime' }}
+                    options={({ navigation }) => ({
+                        title: 'Search Anime',
+                        headerRight: () => <HeaderIcons navigation={navigation} />,
+                    })}
                 />
 
                 <Stack.Screen
                     name="Favorites"
                     component={FavoritesScreen}
-                    options={{ title: 'My Favorites' }}
+                    options={({ navigation }) => ({
+                        title: 'My Favorites',
+                        headerRight: () => <HeaderIcons navigation={navigation} />,
+                    })}
                 />
 
                 <Stack.Screen
                     name="AnimeDetails"
                     component={AnimeDetailsScreen}
-                    options={{ title: 'Anime Details' }}
+                    options={({ navigation }) => ({
+                        title: 'Anime Details',
+                        headerRight: () => <HeaderIcons navigation={navigation} />,
+                    })}
                 />
             </Stack.Navigator>
         </NavigationContainer>
