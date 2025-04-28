@@ -17,7 +17,7 @@ const FavoritesScreen = () => {
                 setFavorites(JSON.parse(storedFavorites));
             }
         } catch (error) {
-            console.error('Virhe suosikkien hakemisessa:', error);
+            console.error('Error fetching favorites:', error);
         }
     };
 
@@ -27,16 +27,16 @@ const FavoritesScreen = () => {
             setFavorites(updatedFavorites);
             await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
 
-            Alert.alert('Poistettu!', 'Anime poistettu suosikeista.');
+            Alert.alert('Deleted!', 'Anime removed from favorites.');
         } catch (error) {
-            console.error('Virhe suosikin poistamisessa:', error);
+            console.error('Error removing favorite:', error);
         }
     };
 
     if (favorites.length === 0) {
         return (
             <View style={styles.container}>
-                <Text style={styles.emptyText}>Ei vielä suosikkeja lisättynä!</Text>
+                <Text style={styles.emptyText}>No favorites added yet!</Text>
             </View>
         );
     }

@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text, Image, Button, StyleSheet, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Tuodaan navigointi
+import { useNavigation } from '@react-navigation/native'; // Import navigation
 
 const AnimeCard = ({ title, imageUrl, onAddFavorite, onRemoveFavorite, isFavoriteScreen, animeId }) => {
-    const navigation = useNavigation(); // Käytämme useNavigation hookia
+    const navigation = useNavigation(); // Use useNavigation hook
 
     return (
         <View style={styles.card}>
@@ -12,19 +12,18 @@ const AnimeCard = ({ title, imageUrl, onAddFavorite, onRemoveFavorite, isFavorit
                     if (animeId) {
                         navigation.navigate('AnimeDetails', { animeId });
                     } else {
-                        console.warn('Ei animeId:tä, navigointia ei suoriteta.');
+                        console.warn('No animeId provided, navigation cancelled.');
                     }
                 }}
             >
-
                 <Image source={{ uri: imageUrl }} style={styles.image} />
                 <Text style={styles.title}>{title}</Text>
             </TouchableOpacity>
 
             {isFavoriteScreen ? (
-                <Button title="Poista suosikista" onPress={onRemoveFavorite} />
+                <Button title="Remove from Favorites" onPress={onRemoveFavorite} />
             ) : (
-                <Button title="Lisää suosikiksi" onPress={onAddFavorite} />
+                <Button title="Add to Favorites" onPress={onAddFavorite} />
             )}
         </View>
     );

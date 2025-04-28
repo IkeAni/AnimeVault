@@ -3,7 +3,7 @@ import { View, TextInput, Button, FlatList, StyleSheet, Alert } from 'react-nati
 import axios from 'axios';
 import AnimeCard from './AnimeCard';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // <- uusi import
+import AsyncStorage from '@react-native-async-storage/async-storage'; // New import
 
 const AnimeSearch = () => {
   const [query, setQuery] = useState('');
@@ -15,7 +15,7 @@ const AnimeSearch = () => {
       const response = await axios.get(`https://api.jikan.moe/v4/anime?q=${query}&limit=10`);
       setAnimeList(response.data.data);
     } catch (error) {
-      console.error('Virhe haettaessa animeja:', error);
+      console.error('Error fetching anime:', error);
     }
   };
 
@@ -26,30 +26,30 @@ const AnimeSearch = () => {
 
       const isAlreadyFavorite = favorites.some((fav) => fav.mal_id === anime.mal_id);
       if (isAlreadyFavorite) {
-        Alert.alert('Huomio', 'Anime on jo suosikeissa.');
+        Alert.alert('Notice', 'Anime is already in favorites.');
         return;
       }
 
       const updatedFavorites = [...favorites, anime];
       await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
 
-      Alert.alert('Onnistui!', `${anime.title} lisätty suosikkeihin.`);
+      Alert.alert('Success!', `${anime.title} added to favorites.`);
     } catch (error) {
-      console.error('Virhe suosikin lisäämisessä:', error);
+      console.error('Error adding favorite:', error);
     }
   };
 
   return (
     <View style={styles.container}>
-      <Button title="Näytä Suosikit" onPress={() => navigation.navigate('Favorites')} />
+      <Button title="Show Favorites" onPress={() => navigation.navigate('Favorites')} />
 
       <TextInput
-        placeholder="Etsi anime..."
+        placeholder="Search for anime..."
         value={query}
         onChangeText={setQuery}
         style={styles.input}
       />
-      <Button title="Hae" onPress={searchAnime} />
+      <Button title="Search" onPress={searchAnime} />
 
       <FlatList
         data={animeList}

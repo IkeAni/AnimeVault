@@ -2,29 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 
 const AnimeDetailsScreen = ({ route }) => {
-    const { animeId } = route.params; // Saamme animeId:n navigoinnin kautta
+    const { animeId } = route.params; // Get animeId from navigation
     const [animeDetails, setAnimeDetails] = useState(null);
 
     useEffect(() => {
         const fetchAnimeDetails = async () => {
-            console.log('Haetaan anime ID:llä', animeId); // <-- Lisätty debug
-            console.log('Saapunut animeId:', animeId);
-
+            console.log('Fetching anime with ID:', animeId);
+            console.log('Received animeId:', animeId);
 
             try {
                 const response = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
-                console.log('Response status:', response.status); // <-- Lisätty debug
+                console.log('Response status:', response.status);
 
                 if (!response.ok) {
-                    throw new Error(`HTTP virhe: ${response.status}`);
+                    throw new Error(`HTTP error: ${response.status}`);
                 }
 
                 const data = await response.json();
-                console.log('Haettu data:', data); // <-- Lisätty debug
+                console.log('Fetched data:', data);
 
                 setAnimeDetails(data.data);
             } catch (error) {
-                console.error('Virhe haettaessa anime-tietoja:', error);
+                console.error('Error fetching anime details:', error);
             }
         };
 
@@ -35,7 +34,7 @@ const AnimeDetailsScreen = ({ route }) => {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#0000ff" />
-                <Text>Ladataan tietoja...</Text>
+                <Text>Loading details...</Text>
             </View>
         );
     }
@@ -45,9 +44,9 @@ const AnimeDetailsScreen = ({ route }) => {
             <Image source={{ uri: animeDetails?.images?.jpg?.image_url }} style={styles.image} />
             <Text style={styles.title}>{animeDetails.title}</Text>
             <Text style={styles.description}>{animeDetails.synopsis}</Text>
-            <Text style={styles.info}>Julkaisuvuosi: {animeDetails.year}</Text>
-            <Text style={styles.info}>Arvosana: {animeDetails.score}</Text>
-            <Text style={styles.info}>Tyylilajit: {animeDetails.genres.map(genre => genre.name).join(', ')}</Text>
+            <Text style={styles.info}>Release Year: {animeDetails.year}</Text>
+            <Text style={styles.info}>Score: {animeDetails.score}</Text>
+            <Text style={styles.info}>Genres: {animeDetails.genres.map(genre => genre.name).join(', ')}</Text>
         </ScrollView>
     );
 };
@@ -86,3 +85,4 @@ const styles = StyleSheet.create({
 });
 
 export default AnimeDetailsScreen;
+
