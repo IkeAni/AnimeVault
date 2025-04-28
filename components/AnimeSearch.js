@@ -109,6 +109,3 @@ const styles = StyleSheet.create({
 });
 
 export default AnimeSearch;
-
-
-
