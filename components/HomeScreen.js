@@ -59,12 +59,20 @@ const HomeScreen = () => {
                         <Text style={[styles.featuredName, { color: colors.text }]}>
                             {featuredAnime.title}
                         </Text>
+
+                        <TouchableOpacity
+                            style={[styles.detailsButton, { backgroundColor: colors.primary }]}
+                            onPress={() => navigation.navigate('AnimeDetails', { animeId: featuredAnime.mal_id })}
+                        >
+                            <Text style={styles.detailsButtonText}>View Details</Text>
+                        </TouchableOpacity>
                     </>
                 ) : (
                     <Text style={[styles.featuredTitle, { color: colors.text }]}>
                         No featured anime available
                     </Text>
                 )}
+
             </View>
         </View>
     );
@@ -113,6 +121,19 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         textAlign: 'center',
     },
+    detailsButton: {
+        marginTop: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    detailsButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+
 });
 
 export default HomeScreen;
