@@ -5,6 +5,7 @@ import { useColorScheme } from 'react-native';
 import AnimeSearch from '../components/AnimeSearch';
 import FavoritesScreen from '../components/FavoritesScreen';
 import AnimeDetailsScreen from '../components/AnimeDetailsScreen';
+import HomeScreen from '../components/HomeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -38,7 +39,7 @@ const AppNavigator = () => {
     return (
         <NavigationContainer theme={CustomDarkTheme}>
             <Stack.Navigator
-                initialRouteName="Search"
+                initialRouteName="Home"
                 screenOptions={{
                     headerStyle: { backgroundColor: colorScheme === 'dark' ? '#1e1e1e' : '#222222' },
                     headerTintColor: '#fff',
@@ -46,10 +47,12 @@ const AppNavigator = () => {
                     headerTitleStyle: { fontSize: 22, fontWeight: 'bold' },
                 }}
             >
-                <Stack.Screen name="Search" component={AnimeSearch} options={{ title: 'Anime Vault' }} />
+                <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
+                <Stack.Screen name="Search" component={AnimeSearch} options={{ title: 'Search Anime' }} />
                 <Stack.Screen name="Favorites" component={FavoritesScreen} options={{ title: 'My Favorites' }} />
                 <Stack.Screen name="AnimeDetails" component={AnimeDetailsScreen} options={{ title: 'Anime Details' }} />
             </Stack.Navigator>
+
         </NavigationContainer>
     );
 };
