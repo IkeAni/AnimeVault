@@ -58,21 +58,7 @@ const HomeScreen = () => {
 
     return (
         <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-            <Text style={[styles.title, { color: colors.text }]}>Anime Vault</Text>
-
-            <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.primary }]}
-                onPress={() => navigation.navigate('Search')}
-            >
-                <Text style={styles.buttonText}>Search Anime</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.primary }]}
-                onPress={() => navigation.navigate('Favorites')}
-            >
-                <Text style={styles.buttonText}>View Favorites</Text>
-            </TouchableOpacity>
+            <Text style={[styles.title, { color: colors.text }]}>Discover trending anime 🎌</Text>
 
             <View style={styles.featuredContainer}>
                 {loadingFeatured ? (
@@ -102,7 +88,7 @@ const HomeScreen = () => {
             </View>
 
             {/* Trending Anime Section */}
-            <View style={{ marginTop: 30 }}>
+            <View style={{ marginTop: 40 }}>
                 <Text style={[styles.topAnimeHeading, { color: colors.text }]}>Top Trending Anime</Text>
 
                 {loadingTop ? (
@@ -127,29 +113,22 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingTop: 20,
     },
     title: {
-        fontSize: 32,
+        fontSize: 30,
         fontWeight: 'bold',
-        marginBottom: 40,
         textAlign: 'center',
+        marginBottom: 25,
     },
-    button: {
-        width: '80%',
-        paddingVertical: 15,
-        borderRadius: 10,
-        alignSelf: 'center',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    buttonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 18,
+    subtitle: {
+        fontSize: 16,
+        textAlign: 'center',
+        marginTop: 8,
+        marginBottom: 25,
     },
     featuredContainer: {
-        marginTop: 20,
         alignItems: 'center',
     },
     featuredTitle: {
@@ -158,15 +137,17 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     featuredImage: {
-        width: 200,
-        height: 280,
-        borderRadius: 12,
+        width: 250,
+        height: 350,
+        borderRadius: 20,
         marginBottom: 10,
+        resizeMode: 'cover',
     },
     featuredName: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: '600',
         textAlign: 'center',
+        marginBottom: 10,
     },
     detailsButton: {
         marginTop: 10,
@@ -184,6 +165,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 10,
+        marginLeft: 5,
     },
     topAnimeItem: {
         marginRight: 15,
@@ -195,6 +177,7 @@ const styles = StyleSheet.create({
         height: 140,
         borderRadius: 10,
         marginBottom: 5,
+        resizeMode: 'cover',
     },
     topAnimeTitle: {
         fontSize: 14,
@@ -203,5 +186,3 @@ const styles = StyleSheet.create({
 });
 
 export default HomeScreen;
-
-

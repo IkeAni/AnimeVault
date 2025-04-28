@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, TouchableOpacity, View } from 'react-native';
+import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import AnimeSearch from '../components/AnimeSearch';
 import FavoritesScreen from '../components/FavoritesScreen';
 import AnimeDetailsScreen from '../components/AnimeDetailsScreen';
@@ -34,7 +35,7 @@ const CustomDarkTheme = {
 };
 
 const AppNavigator = () => {
-    const colorScheme = useColorScheme(); // detects if user has dark mode or light mode
+    const colorScheme = useColorScheme(); // detects dark/light mode
 
     return (
         <NavigationContainer theme={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
@@ -47,15 +48,45 @@ const AppNavigator = () => {
                     headerTitleStyle: { fontSize: 22, fontWeight: 'bold' },
                 }}
             >
-                <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
-                <Stack.Screen name="Search" component={AnimeSearch} options={{ title: 'Search Anime' }} />
-                <Stack.Screen name="Favorites" component={FavoritesScreen} options={{ title: 'My Favorites' }} />
-                <Stack.Screen name="AnimeDetails" component={AnimeDetailsScreen} options={{ title: 'Anime Details' }} />
-            </Stack.Navigator>
+                <Stack.Screen
+                    name="Home"
+                    component={HomeScreen}
+                    options={({ navigation }) => ({
+                        title: 'Anime Vault',
+                        headerRight: () => (
+                            <View style={{ flexDirection: 'row' }}>
+                                <TouchableOpacity onPress={() => navigation.navigate('Search')} style={{ marginRight: 20 }}>
+                                    <Ionicons name="search" size={24} color="#fff" />
+                                </TouchableOpacity>
 
+                                <TouchableOpacity onPress={() => navigation.navigate('Favorites')} style={{ marginRight: 10 }}>
+                                    <FontAwesome name="heart" size={24} color="#fff" />
+                                </TouchableOpacity>
+                            </View>
+                        ),
+                    })}
+                />
+
+                <Stack.Screen
+                    name="Search"
+                    component={AnimeSearch}
+                    options={{ title: 'Search Anime' }}
+                />
+
+                <Stack.Screen
+                    name="Favorites"
+                    component={FavoritesScreen}
+                    options={{ title: 'My Favorites' }}
+                />
+
+                <Stack.Screen
+                    name="AnimeDetails"
+                    component={AnimeDetailsScreen}
+                    options={{ title: 'Anime Details' }}
+                />
+            </Stack.Navigator>
         </NavigationContainer>
     );
 };
 
 export default AppNavigator;
-
