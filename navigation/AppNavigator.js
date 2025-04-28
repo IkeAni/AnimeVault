@@ -14,7 +14,7 @@ const LightTheme = {
     ...DefaultTheme,
     colors: {
         ...DefaultTheme.colors,
-        background: '#f2f2f2',
+        background: '#f3e5f5',
         card: '#ffffff',
         text: '#222222',
         primary: '#222222', // soft black
@@ -37,7 +37,7 @@ const AppNavigator = () => {
     const colorScheme = useColorScheme(); // detects if user has dark mode or light mode
 
     return (
-        <NavigationContainer theme={CustomDarkTheme}>
+        <NavigationContainer theme={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
             <Stack.Navigator
                 initialRouteName="Home"
                 screenOptions={{
