@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Image, ActivityIndicator } from 'react-native';
+import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Image, FlatList, ActivityIndicator } from 'react-native';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import axios from 'axios';
+import * as Animatable from 'react-native-animatable';
 
 const HomeScreen = () => {
     const navigation = useNavigation();
     const { colors } = useTheme();
     const [featuredAnime, setFeaturedAnime] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const [topAnimeList, setTopAnimeList] = useState([]);
+    const [loadingFeatured, setLoadingFeatured] = useState(true);
+    const [loadingTop, setLoadingTop] = useState(true);
 
     useEffect(() => {
         fetchFeaturedAnime();
+        fetchTopAnime();
     }, []);
 
     const fetchFeaturedAnime = async () => {
@@ -22,12 +26,38 @@ const HomeScreen = () => {
         } catch (error) {
             console.error('Error fetching featured anime:', error);
         } finally {
-            setLoading(false);
+            setLoadingFeatured(false);
         }
     };
 
+    const fetchTopAnime = async () => {
+        try {
+            const response = await axios.get('https://api.jikan.moe/v4/top/anime?limit=20');
+            setTopAnimeList(response.data.data);
+        } catch (error) {
+            console.error('Error fetching top anime:', error);
+        } finally {
+            setLoadingTop(false);
+        }
+    };
+
+    const renderTopAnimeItem = ({ item }) => (
+        <TouchableOpacity
+            style={styles.topAnimeItem}
+            onPress={() => navigation.navigate('AnimeDetails', { animeId: item.mal_id })}
+        >
+            <Image
+                source={{ uri: item.images.jpg.image_url }}
+                style={styles.topAnimeImage}
+            />
+            <Text style={[styles.topAnimeTitle, { color: colors.text }]} numberOfLines={2}>
+                {item.title}
+            </Text>
+        </TouchableOpacity>
+    );
+
     return (
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
             <Text style={[styles.title, { color: colors.text }]}>Anime Vault</Text>
 
             <TouchableOpacity
@@ -45,13 +75,11 @@ const HomeScreen = () => {
             </TouchableOpacity>
 
             <View style={styles.featuredContainer}>
-                {loading ? (
+                {loadingFeatured ? (
                     <ActivityIndicator size="large" color={colors.primary} />
                 ) : featuredAnime ? (
                     <>
-                        <Text style={[styles.featuredTitle, { color: colors.text }]}>
-                            Featured Anime
-                        </Text>
+                        <Text style={[styles.featuredTitle, { color: colors.text }]}>Featured Anime</Text>
                         <Image
                             source={{ uri: featuredAnime.images.jpg.image_url }}
                             style={styles.featuredImage}
@@ -59,7 +87,6 @@ const HomeScreen = () => {
                         <Text style={[styles.featuredName, { color: colors.text }]}>
                             {featuredAnime.title}
                         </Text>
-
                         <TouchableOpacity
                             style={[styles.detailsButton, { backgroundColor: colors.primary }]}
                             onPress={() => navigation.navigate('AnimeDetails', { animeId: featuredAnime.mal_id })}
@@ -72,9 +99,28 @@ const HomeScreen = () => {
                         No featured anime available
                     </Text>
                 )}
-
             </View>
-        </View>
+
+            {/* Trending Anime Section */}
+            <View style={{ marginTop: 30 }}>
+                <Text style={[styles.topAnimeHeading, { color: colors.text }]}>Top Trending Anime</Text>
+
+                {loadingTop ? (
+                    <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 10 }} />
+                ) : (
+                    <Animatable.View animation="fadeInUp" duration={800}>
+                        <FlatList
+                            data={topAnimeList}
+                            keyExtractor={(item) => item.mal_id.toString()}
+                            renderItem={renderTopAnimeItem}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingVertical: 10 }}
+                        />
+                    </Animatable.View>
+                )}
+            </View>
+        </ScrollView>
     );
 };
 
@@ -82,17 +128,18 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        alignItems: 'center',
     },
     title: {
         fontSize: 32,
         fontWeight: 'bold',
         marginBottom: 40,
+        textAlign: 'center',
     },
     button: {
         width: '80%',
         paddingVertical: 15,
         borderRadius: 10,
+        alignSelf: 'center',
         alignItems: 'center',
         marginBottom: 20,
     },
@@ -102,7 +149,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     featuredContainer: {
-        marginTop: 30,
+        marginTop: 20,
         alignItems: 'center',
     },
     featuredTitle: {
@@ -133,8 +180,28 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-
+    topAnimeHeading: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    topAnimeItem: {
+        marginRight: 15,
+        alignItems: 'center',
+        width: 120,
+    },
+    topAnimeImage: {
+        width: 100,
+        height: 140,
+        borderRadius: 10,
+        marginBottom: 5,
+    },
+    topAnimeTitle: {
+        fontSize: 14,
+        textAlign: 'center',
+    },
 });
 
 export default HomeScreen;
+
 
