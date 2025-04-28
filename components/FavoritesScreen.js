@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AnimeCard from './AnimeCard';
+import { useTheme } from '@react-navigation/native';
 
 const FavoritesScreen = () => {
     const [favorites, setFavorites] = useState([]);
+    const { colors } = useTheme();
 
     useEffect(() => {
         fetchFavorites();
@@ -26,8 +28,7 @@ const FavoritesScreen = () => {
             const updatedFavorites = favorites.filter((anime) => anime.mal_id !== animeId);
             setFavorites(updatedFavorites);
             await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-
-            Alert.alert('Deleted!', 'Anime removed from favorites.');
+            alert('Anime removed from favorites!');
         } catch (error) {
             console.error('Error removing favorite:', error);
         }
@@ -35,17 +36,20 @@ const FavoritesScreen = () => {
 
     if (favorites.length === 0) {
         return (
-            <View style={styles.container}>
-                <Text style={styles.emptyText}>No favorites added yet!</Text>
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <Text style={[styles.emptyText, { color: colors.text }]}>
+                    You haven't added any favorites yet.
+                </Text>
             </View>
         );
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <FlatList
                 data={favorites}
-                keyExtractor={(item, index) => item.mal_id.toString() + index.toString()}
+                keyExtractor={(item) => item.mal_id.toString()}
+                contentContainerStyle={{ paddingBottom: 20 }}
                 renderItem={({ item }) => (
                     <AnimeCard
                         title={item.title}
@@ -62,15 +66,17 @@ const FavoritesScreen = () => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
         flex: 1,
+        padding: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     emptyText: {
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: 20,
         textAlign: 'center',
         marginTop: 20,
     },
 });
 
 export default FavoritesScreen;
+

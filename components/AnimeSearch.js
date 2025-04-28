@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, TextInput, FlatList, StyleSheet, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import AnimeCard from './AnimeCard';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // New import
+import { useNavigation, useTheme } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const AnimeSearch = () => {
   const [query, setQuery] = useState('');
   const [animeList, setAnimeList] = useState([]);
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
+  const { colors } = useTheme();
 
   const searchAnime = async () => {
+    if (!query.trim()) return;
+
     try {
+      setLoading(true);
       const response = await axios.get(`https://api.jikan.moe/v4/anime?q=${query}&limit=10`);
-      setAnimeList(response.data.data);
+
+      const uniqueAnimeList = Array.from(
+        new Map(response.data.data.map(item => [item.mal_id, item])).values()
+      );
+
+      setAnimeList(uniqueAnimeList);
     } catch (error) {
       console.error('Error fetching anime:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -26,58 +38,112 @@ const AnimeSearch = () => {
 
       const isAlreadyFavorite = favorites.some((fav) => fav.mal_id === anime.mal_id);
       if (isAlreadyFavorite) {
-        Alert.alert('Notice', 'Anime is already in favorites.');
+        alert('Anime is already in favorites.');
         return;
       }
 
       const updatedFavorites = [...favorites, anime];
       await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
-
-      Alert.alert('Success!', `${anime.title} added to favorites.`);
+      alert(`${anime.title} added to favorites!`);
     } catch (error) {
       console.error('Error adding favorite:', error);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Button title="Show Favorites" onPress={() => navigation.navigate('Favorites')} />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <TouchableOpacity
+        style={[styles.favoritesButton, { backgroundColor: colors.primary }]}
+        onPress={() => navigation.navigate('Favorites')}
+      >
+        <Text style={styles.favoritesButtonText}>View Favorites</Text>
+      </TouchableOpacity>
 
       <TextInput
-        placeholder="Search for anime..."
+        placeholder="Search anime..."
+        placeholderTextColor="#888"
         value={query}
         onChangeText={setQuery}
-        style={styles.input}
+        style={[styles.input, { color: colors.text, borderColor: colors.primary }]}
+        onSubmitEditing={searchAnime}
+        returnKeyType="search"
       />
-      <Button title="Search" onPress={searchAnime} />
 
-      <FlatList
-        data={animeList}
-        keyExtractor={(item, index) => item.mal_id.toString() + index.toString()}
-        renderItem={({ item }) => (
-          <AnimeCard
-            title={item.title}
-            animeId={item.mal_id}
-            imageUrl={item.images.jpg.image_url}
-            onAddFavorite={() => addFavorite(item)}
-          />
-        )}
-      />
+      <TouchableOpacity
+        style={[styles.searchButton, { backgroundColor: colors.primary }]}
+        onPress={searchAnime}
+      >
+        <Text style={styles.searchButtonText}>Search</Text>
+      </TouchableOpacity>
+
+      {loading ? (
+        <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 20 }} />
+      ) : (
+        <FlatList
+          data={animeList}
+          keyExtractor={(item) => item.mal_id.toString()}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          renderItem={({ item }) => (
+            <AnimeCard
+              title={item.title}
+              imageUrl={item.images.jpg.image_url}
+              animeId={item.mal_id}
+              onAddFavorite={() => addFavorite(item)}
+            />
+          )}
+          ListEmptyComponent={!loading && (
+            <Text style={[styles.emptyText, { color: colors.text }]}>
+              {query ? 'No anime found.' : 'Start searching for anime!'}
+            </Text>
+          )}
+        />
+      )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
     flex: 1,
+    padding: 20,
   },
   input: {
     borderWidth: 1,
-    padding: 10,
-    marginVertical: 10,
     borderRadius: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginBottom: 10,
+    fontSize: 16,
+  },
+  searchButton: {
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  searchButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  favoritesButton: {
+    paddingVertical: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  favoritesButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 50,
+    fontSize: 18,
   },
 });
 
 export default AnimeSearch;
+
+

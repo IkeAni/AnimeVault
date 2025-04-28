@@ -1,26 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { useTheme } from '@react-navigation/native';
 
 const AnimeDetailsScreen = ({ route }) => {
-    const { animeId } = route.params; // Get animeId from navigation
+    const { animeId } = route.params;
     const [animeDetails, setAnimeDetails] = useState(null);
+    const { colors } = useTheme();
 
     useEffect(() => {
         const fetchAnimeDetails = async () => {
             console.log('Fetching anime with ID:', animeId);
-            console.log('Received animeId:', animeId);
-
             try {
                 const response = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
-                console.log('Response status:', response.status);
-
                 if (!response.ok) {
                     throw new Error(`HTTP error: ${response.status}`);
                 }
-
                 const data = await response.json();
-                console.log('Fetched data:', data);
-
                 setAnimeDetails(data.data);
             } catch (error) {
                 console.error('Error fetching anime details:', error);
@@ -33,20 +28,22 @@ const AnimeDetailsScreen = ({ route }) => {
     if (!animeDetails) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text>Loading details...</Text>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text style={[styles.loadingText, { color: colors.text }]}>Loading details...</Text>
             </View>
         );
     }
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
             <Image source={{ uri: animeDetails?.images?.jpg?.image_url }} style={styles.image} />
-            <Text style={styles.title}>{animeDetails.title}</Text>
-            <Text style={styles.description}>{animeDetails.synopsis}</Text>
-            <Text style={styles.info}>Release Year: {animeDetails.year}</Text>
-            <Text style={styles.info}>Score: {animeDetails.score}</Text>
-            <Text style={styles.info}>Genres: {animeDetails.genres.map(genre => genre.name).join(', ')}</Text>
+            <Text style={[styles.title, { color: colors.text }]}>{animeDetails.title}</Text>
+            <Text style={[styles.description, { color: colors.text }]}>{animeDetails.synopsis || 'No description available.'}</Text>
+            <Text style={[styles.info, { color: colors.text }]}>Release Year: {animeDetails.year || 'Unknown'}</Text>
+            <Text style={[styles.info, { color: colors.text }]}>Score: {animeDetails.score ?? 'N/A'}</Text>
+            <Text style={[styles.info, { color: colors.text }]}>
+                Genres: {animeDetails.genres?.map(genre => genre.name).join(', ') || 'Unknown'}
+            </Text>
         </ScrollView>
     );
 };
@@ -55,28 +52,31 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#fff',
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: '#fff',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
     },
     image: {
         width: '100%',
         height: 250,
-        borderRadius: 10,
+        borderRadius: 15,
         marginBottom: 20,
     },
     title: {
-        fontSize: 24,
+        fontSize: 26,
         fontWeight: 'bold',
         marginBottom: 10,
     },
     description: {
         fontSize: 16,
-        marginBottom: 10,
-        color: '#555',
+        marginBottom: 15,
     },
     info: {
         fontSize: 16,
@@ -85,4 +85,5 @@ const styles = StyleSheet.create({
 });
 
 export default AnimeDetailsScreen;
+
 
