@@ -1,16 +1,22 @@
 import React from 'react';
-import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useColorScheme, TouchableOpacity, View } from 'react-native';
-import { Ionicons, FontAwesome } from '@expo/vector-icons'; // icons
+import { DefaultTheme, DarkTheme } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
+import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { auth } from '../firebase';
+import { signOut } from 'firebase/auth';
+
+import HomeScreen from '../components/HomeScreen';
 import AnimeSearch from '../components/AnimeSearch';
 import FavoritesScreen from '../components/FavoritesScreen';
 import AnimeDetailsScreen from '../components/AnimeDetailsScreen';
-import HomeScreen from '../components/HomeScreen';
+import LoginScreen from '../components/LoginScreen';
+import SignUpScreen from '../components/SignUpScreen';
 
 const Stack = createNativeStackNavigator();
 
-// Custom themes
+// Custom Light Theme
 const LightTheme = {
     ...DefaultTheme,
     colors: {
@@ -22,6 +28,7 @@ const LightTheme = {
     },
 };
 
+// Custom Dark Theme
 const CustomDarkTheme = {
     ...DarkTheme,
     colors: {
@@ -33,9 +40,28 @@ const CustomDarkTheme = {
     },
 };
 
-// Common Header Right Icons
-const HeaderIcons = ({ navigation }) => (
-    <View style={{ flexDirection: 'row' }}>
+// Header Left: Logout Icon
+const HeaderIconsLeft = () => {
+    const handleLogout = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
+
+    return (
+        <View style={{ marginLeft: 15 }}>
+            <TouchableOpacity onPress={handleLogout}>
+                <MaterialIcons name="logout" size={26} color="#fff" />
+            </TouchableOpacity>
+        </View>
+    );
+};
+
+// Header Right: Search + Favorites Icons
+const HeaderIconsRight = ({ navigation }) => (
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <TouchableOpacity onPress={() => navigation.navigate('Search')} style={{ marginRight: 20 }}>
             <Ionicons name="search" size={24} color="#fff" />
         </TouchableOpacity>
@@ -49,7 +75,6 @@ const AppNavigator = () => {
     const colorScheme = useColorScheme();
 
     return (
-        <NavigationContainer theme={colorScheme === 'dark' ? CustomDarkTheme : LightTheme}>
             <Stack.Navigator
                 initialRouteName="Home"
                 screenOptions={{
@@ -64,38 +89,35 @@ const AppNavigator = () => {
                     component={HomeScreen}
                     options={({ navigation }) => ({
                         title: 'Anime Vault',
-                        headerRight: () => <HeaderIcons navigation={navigation} />,
+                        headerLeft: () => <HeaderIconsLeft />,
+                        headerRight: () => <HeaderIconsRight navigation={navigation} />,
                     })}
                 />
-
                 <Stack.Screen
                     name="Search"
                     component={AnimeSearch}
                     options={({ navigation }) => ({
                         title: 'Search Anime',
-                        headerRight: () => <HeaderIcons navigation={navigation} />,
+                        headerRight: () => <HeaderIconsRight navigation={navigation} />,
                     })}
                 />
-
                 <Stack.Screen
                     name="Favorites"
                     component={FavoritesScreen}
                     options={({ navigation }) => ({
                         title: 'My Favorites',
-                        headerRight: () => <HeaderIcons navigation={navigation} />,
+                        headerRight: () => <HeaderIconsRight navigation={navigation} />,
                     })}
                 />
-
                 <Stack.Screen
                     name="AnimeDetails"
                     component={AnimeDetailsScreen}
                     options={({ navigation }) => ({
                         title: 'Anime Details',
-                        headerRight: () => <HeaderIcons navigation={navigation} />,
+                        headerRight: () => <HeaderIconsRight navigation={navigation} />,
                     })}
                 />
             </Stack.Navigator>
-        </NavigationContainer>
     );
 };
 
