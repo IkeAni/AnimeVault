@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation, useTheme } from '@react-navigation/native';
-import * as Animatable from 'react-native-animatable'; // for fade-in animation
+import * as Animatable from 'react-native-animatable';
 
 const AnimeCard = ({ title, imageUrl, onAddFavorite, onRemoveFavorite, isFavoriteScreen, animeId }) => {
     const navigation = useNavigation();
@@ -14,8 +14,6 @@ const AnimeCard = ({ title, imageUrl, onAddFavorite, onRemoveFavorite, isFavorit
                 onPress={() => {
                     if (animeId) {
                         navigation.navigate('AnimeDetails', { animeId });
-                    } else {
-                        console.warn('No animeId provided, navigation cancelled.');
                     }
                 }}
             >
@@ -23,14 +21,17 @@ const AnimeCard = ({ title, imageUrl, onAddFavorite, onRemoveFavorite, isFavorit
                 <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.primary }]}
-                onPress={isFavoriteScreen ? onRemoveFavorite : onAddFavorite}
-            >
-                <Text style={styles.buttonText}>
-                    {isFavoriteScreen ? 'Remove from Favorites' : 'Add to Favorites'}
-                </Text>
-            </TouchableOpacity>
+            {onAddFavorite && !isFavoriteScreen && (
+                <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={onAddFavorite}>
+                    <Text style={styles.buttonText}>Add to Favorites</Text>
+                </TouchableOpacity>
+            )}
+
+            {onRemoveFavorite && isFavoriteScreen && (
+                <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={onRemoveFavorite}>
+                    <Text style={styles.buttonText}>Remove</Text>
+                </TouchableOpacity>
+            )}
         </Animatable.View>
     );
 };
@@ -72,4 +73,3 @@ const styles = StyleSheet.create({
 });
 
 export default AnimeCard;
-

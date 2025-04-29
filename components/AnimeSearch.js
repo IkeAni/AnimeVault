@@ -3,7 +3,8 @@ import { View, TextInput, FlatList, StyleSheet, ActivityIndicator, Text } from '
 import axios from 'axios';
 import AnimeCard from './AnimeCard';
 import { useTheme } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { db, auth } from '../firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 const AnimeSearch = () => {
   const [query, setQuery] = useState('');
@@ -17,11 +18,7 @@ const AnimeSearch = () => {
     try {
       setLoading(true);
       const response = await axios.get(`https://api.jikan.moe/v4/anime?q=${query}&limit=10`);
-
-      const uniqueAnimeList = Array.from(
-        new Map(response.data.data.map(item => [item.mal_id, item])).values()
-      );
-
+      const uniqueAnimeList = Array.from(new Map(response.data.data.map(item => [item.mal_id, item])).values());
       setAnimeList(uniqueAnimeList);
     } catch (error) {
       console.error('Error fetching anime:', error);
@@ -32,22 +29,28 @@ const AnimeSearch = () => {
 
   const addFavorite = async (anime) => {
     try {
-      const storedFavorites = await AsyncStorage.getItem('favorites');
-      const favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
-
-      const isAlreadyFavorite = favorites.some((fav) => fav.mal_id === anime.mal_id);
-      if (isAlreadyFavorite) {
-        alert('Anime is already in favorites.');
+      const user = auth.currentUser;
+      if (!user) {
+        alert('You must be logged in.');
         return;
       }
 
-      const updatedFavorites = [...favorites, anime];
-      await AsyncStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+      console.log('Saving anime to favorites:', anime);
+
+      const favoriteRef = doc(db, 'users', user.uid, 'favorites', anime.mal_id.toString());
+
+      await setDoc(favoriteRef, {
+        title: anime.title || anime.titles?.[0]?.title || 'Unknown Title',
+        imageUrl: anime.images?.jpg?.image_url || '',
+        mal_id: anime.mal_id,
+      });
+
       alert(`${anime.title} added to favorites!`);
     } catch (error) {
       console.error('Error adding favorite:', error);
     }
   };
+
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -78,8 +81,7 @@ const AnimeSearch = () => {
           )}
           ListEmptyComponent={!loading && (
             <Text style={[styles.emptyText, { color: colors.text }]}>
-              {query ? 'No anime found.' : 'Start searching for anime!'
-              }
+              {query ? 'No anime found.' : 'Start searching for anime!'}
             </Text>
           )}
         />

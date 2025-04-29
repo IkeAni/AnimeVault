@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -11,8 +12,15 @@ const firebaseConfig = {
     appId: "1:231303616026:web:9f844d55519f5fe2afa3a3"
 };
 
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+
+// Use persistent auth (so login survives app restarts)
+const auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage),
+});
+
+// Initialize Firestore
 const db = getFirestore(app);
 
 export { auth, db };
