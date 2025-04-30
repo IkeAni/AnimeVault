@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, TextInput, FlatList, StyleSheet, ActivityIndicator, Text } from 'react-native';
+import { View, TextInput, FlatList, StyleSheet, ActivityIndicator, Text, Alert } from 'react-native';
 import axios from 'axios';
 import AnimeCard from './AnimeCard';
 import { useTheme } from '@react-navigation/native';
@@ -45,7 +45,7 @@ const AnimeSearch = () => {
         mal_id: anime.mal_id,
       });
 
-      alert(`${anime.title} added to favorites!`);
+      Alert.alert(`${anime.title} added to favorites!`);
     } catch (error) {
       console.error('Error adding favorite:', error);
     }
