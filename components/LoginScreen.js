@@ -11,7 +11,7 @@ const LoginScreen = () => {
     const [password, setPassword] = useState('');
 
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {});
+        const unsubscribe = onAuthStateChanged(auth, (user) => { });
         return unsubscribe;
     }, []);
 

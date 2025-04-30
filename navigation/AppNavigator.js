@@ -75,49 +75,49 @@ const AppNavigator = () => {
     const colorScheme = useColorScheme();
 
     return (
-            <Stack.Navigator
-                initialRouteName="Home"
-                screenOptions={{
-                    headerStyle: { backgroundColor: colorScheme === 'dark' ? '#1e1e1e' : '#222222' },
-                    headerTintColor: '#fff',
-                    headerTitleAlign: 'center',
-                    headerTitleStyle: { fontSize: 22, fontWeight: 'bold' },
-                }}
-            >
-                <Stack.Screen
-                    name="Home"
-                    component={HomeScreen}
-                    options={({ navigation }) => ({
-                        title: 'Anime Vault',
-                        headerLeft: () => <HeaderIconsLeft />,
-                        headerRight: () => <HeaderIconsRight navigation={navigation} />,
-                    })}
-                />
-                <Stack.Screen
-                    name="Search"
-                    component={AnimeSearch}
-                    options={({ navigation }) => ({
-                        title: 'Search Anime',
-                        headerRight: () => <HeaderIconsRight navigation={navigation} />,
-                    })}
-                />
-                <Stack.Screen
-                    name="Favorites"
-                    component={FavoritesScreen}
-                    options={({ navigation }) => ({
-                        title: 'My Favorites',
-                        headerRight: () => <HeaderIconsRight navigation={navigation} />,
-                    })}
-                />
-                <Stack.Screen
-                    name="AnimeDetails"
-                    component={AnimeDetailsScreen}
-                    options={({ navigation }) => ({
-                        title: 'Anime Details',
-                        headerRight: () => <HeaderIconsRight navigation={navigation} />,
-                    })}
-                />
-            </Stack.Navigator>
+        <Stack.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+                headerStyle: { backgroundColor: colorScheme === 'dark' ? '#1e1e1e' : '#222222' },
+                headerTintColor: '#fff',
+                headerTitleAlign: 'center',
+                headerTitleStyle: { fontSize: 22, fontWeight: 'bold' },
+            }}
+        >
+            <Stack.Screen
+                name="Home"
+                component={HomeScreen}
+                options={({ navigation }) => ({
+                    title: 'Anime Vault',
+                    headerLeft: () => <HeaderIconsLeft />,
+                    headerRight: () => <HeaderIconsRight navigation={navigation} />,
+                })}
+            />
+            <Stack.Screen
+                name="Search"
+                component={AnimeSearch}
+                options={({ navigation }) => ({
+                    title: 'Search Anime',
+                    headerRight: () => <HeaderIconsRight navigation={navigation} />,
+                })}
+            />
+            <Stack.Screen
+                name="Favorites"
+                component={FavoritesScreen}
+                options={({ navigation }) => ({
+                    title: 'My Favorites',
+                    headerRight: () => <HeaderIconsRight navigation={navigation} />,
+                })}
+            />
+            <Stack.Screen
+                name="AnimeDetails"
+                component={AnimeDetailsScreen}
+                options={({ navigation }) => ({
+                    title: 'Anime Details',
+                    headerRight: () => <HeaderIconsRight navigation={navigation} />,
+                })}
+            />
+        </Stack.Navigator>
     );
 };
 
