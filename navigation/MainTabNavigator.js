@@ -1,19 +1,15 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { View, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
 import HomeScreen from '../components/HomeScreen';
 import FavoritesScreen from '../components/FavoritesScreen';
 import ProfileScreen from '../components/ProfileScreen';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import SettingsScreen from '../components/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
-
-const SettingsScreen = () => (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Settings Coming Soon</Text>
-    </View>
-);
 
 // Search icon for Home header only
 const HeaderSearchIcon = () => {
@@ -95,5 +91,3 @@ const MainTabNavigator = () => {
 };
 
 export default MainTabNavigator;
-
-
