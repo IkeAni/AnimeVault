@@ -6,13 +6,15 @@ import { auth, db } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
 const SignUpScreen = () => {
-    const { colors } = useTheme();
-    const navigation = useNavigation();
+    const { colors } = useTheme(); // Access current theme colors
+    const navigation = useNavigation(); // Navigation hook
 
+    // Form field states
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [username, setUsername] = useState('');
 
+    // Handles sign-up logic with Firebase Auth & Firestore
     const handleSignUp = async () => {
         if (!email || !password || !username) {
             Alert.alert('Missing Fields', 'Please fill in all fields.');
@@ -20,9 +22,11 @@ const SignUpScreen = () => {
         }
 
         try {
+            // Create user with email & password in Firebase Auth
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
+            // Store user profile info in Firestore
             await setDoc(doc(db, 'users', user.uid), {
                 email: user.email,
                 username,
@@ -39,6 +43,7 @@ const SignUpScreen = () => {
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <Text style={[styles.title, { color: colors.text }]}>Create an Account</Text>
 
+            {/* Username Input */}
             <TextInput
                 placeholder="Username"
                 placeholderTextColor="#999"
@@ -48,6 +53,7 @@ const SignUpScreen = () => {
                 style={[styles.input, { borderColor: colors.primary, color: colors.text }]}
             />
 
+            {/* Email Input */}
             <TextInput
                 placeholder="Email"
                 placeholderTextColor="#999"
@@ -58,6 +64,7 @@ const SignUpScreen = () => {
                 style={[styles.input, { borderColor: colors.primary, color: colors.text }]}
             />
 
+            {/* Password Input */}
             <TextInput
                 placeholder="Password"
                 placeholderTextColor="#999"
@@ -67,6 +74,7 @@ const SignUpScreen = () => {
                 style={[styles.input, { borderColor: colors.primary, color: colors.text }]}
             />
 
+            {/* Sign Up Button */}
             <TouchableOpacity
                 style={[styles.button, { backgroundColor: colors.primary }]}
                 onPress={handleSignUp}
@@ -74,6 +82,7 @@ const SignUpScreen = () => {
                 <Text style={styles.buttonText}>Sign Up</Text>
             </TouchableOpacity>
 
+            {/* Link to Login Screen */}
             <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Text style={[styles.link, { color: colors.primary }]}>
                     Already have an account? Log In
@@ -83,6 +92,7 @@ const SignUpScreen = () => {
     );
 };
 
+// Basic styling
 const styles = StyleSheet.create({
     container: {
         flex: 1,

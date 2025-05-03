@@ -16,6 +16,7 @@ import { useTheme } from '@react-navigation/native';
 import { db, auth } from '../firebase';
 import { doc, setDoc } from 'firebase/firestore';
 
+// List of genres to use for quick filtering
 const genresList = [
   { id: 1, name: 'Action' },
   { id: 4, name: 'Comedy' },
@@ -35,15 +36,17 @@ const AnimeSearch = () => {
   const [selectedGenre, setSelectedGenre] = useState(null);
   const { colors } = useTheme();
 
+  // Trigger genre search when a genre is selected
   useEffect(() => {
     if (selectedGenre !== null) {
       fetchByGenre(selectedGenre);
     }
   }, [selectedGenre]);
 
+  // Searches anime based on user input query
   const searchAnime = async () => {
     if (!query.trim()) return;
-    setSelectedGenre(null);
+    setSelectedGenre(null); // Clear selected genre if doing a keyword search
 
     try {
       setLoading(true);
@@ -59,6 +62,7 @@ const AnimeSearch = () => {
     }
   };
 
+  // Fetch anime by selected genre
   const fetchByGenre = async (genreId) => {
     try {
       setLoading(true);
@@ -71,6 +75,7 @@ const AnimeSearch = () => {
     }
   };
 
+  // Adds selected anime to Firestore favorites under current user
   const addFavorite = async (anime) => {
     try {
       const user = auth.currentUser;
@@ -95,6 +100,7 @@ const AnimeSearch = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Input for searching anime */}
       <TextInput
         placeholder="Search anime..."
         placeholderTextColor="#888"
@@ -105,6 +111,7 @@ const AnimeSearch = () => {
         returnKeyType="search"
       />
 
+      {/* Horizontal scroll list of genre filters */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.genreScroll}>
         {genresList.map((genre) => (
           <TouchableOpacity
@@ -129,6 +136,7 @@ const AnimeSearch = () => {
         ))}
       </ScrollView>
 
+      {/* Loading indicator while fetching */}
       {loading ? (
         <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 20 }} />
       ) : (
@@ -159,6 +167,7 @@ const AnimeSearch = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
+
   input: {
     borderWidth: 1,
     borderRadius: 8,
@@ -167,6 +176,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     fontSize: 16,
   },
+
   genreButton: {
     paddingVertical: 6,
     paddingHorizontal: 12,
@@ -180,6 +190,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     maxHeight: 40,
   },
+
   emptyText: {
     textAlign: 'center',
     marginTop: 50,
@@ -188,4 +199,3 @@ const styles = StyleSheet.create({
 });
 
 export default AnimeSearch;
-

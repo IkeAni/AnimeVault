@@ -10,12 +10,14 @@ const FavoritesScreen = () => {
     const [favorites, setFavorites] = useState([]);
     const { colors } = useTheme();
 
+    // This hook ensures favorites are fetched every time this screen is focused
     useFocusEffect(
         useCallback(() => {
             fetchFavorites();
         }, [])
     );
 
+    // Fetch favorites from Firestore for the logged-in user
     const fetchFavorites = async () => {
         try {
             const user = auth.currentUser;
@@ -23,6 +25,8 @@ const FavoritesScreen = () => {
 
             const favoritesRef = collection(db, 'users', user.uid, 'favorites');
             const snapshot = await getDocs(favoritesRef);
+
+            // Map each document to a favorite item
             const fetchedFavorites = snapshot.docs.map(doc => doc.data());
             setFavorites(fetchedFavorites);
         } catch (error) {
@@ -30,6 +34,7 @@ const FavoritesScreen = () => {
         }
     };
 
+    // Remove a favorite by its mal_id and refresh the list
     const removeFavorite = async (animeId) => {
         try {
             const user = auth.currentUser;
@@ -38,7 +43,7 @@ const FavoritesScreen = () => {
             const favoriteRef = doc(db, 'users', user.uid, 'favorites', animeId.toString());
             await deleteDoc(favoriteRef);
 
-            fetchFavorites();
+            fetchFavorites(); // Refresh the list after deletion
         } catch (error) {
             console.error('Error removing favorite:', error);
         }
@@ -47,7 +52,9 @@ const FavoritesScreen = () => {
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             {favorites.length === 0 ? (
-                <Text style={[styles.emptyText, { color: colors.text }]}>You haven't added any favorites yet.</Text>
+                <Text style={[styles.emptyText, { color: colors.text }]}>
+                    You haven't added any favorites yet.
+                </Text>
             ) : (
                 <FlatList
                     data={favorites}
@@ -68,6 +75,7 @@ const FavoritesScreen = () => {
     );
 };
 
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -81,5 +89,3 @@ const styles = StyleSheet.create({
 });
 
 export default FavoritesScreen;
-
-

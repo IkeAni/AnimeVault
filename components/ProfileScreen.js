@@ -6,10 +6,11 @@ import { doc, getDoc } from 'firebase/firestore';
 import { signOut } from 'firebase/auth';
 
 const ProfileScreen = () => {
-    const { colors } = useTheme();
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const { colors } = useTheme(); // Pull in current theme colors
+    const [userData, setUserData] = useState(null); // User profile data from Firestore
+    const [loading, setLoading] = useState(true); // Loading state for profile fetch
 
+    // Fetch user profile data from Firestore on component mount
     useEffect(() => {
         const fetchUserData = async () => {
             try {
@@ -28,6 +29,7 @@ const ProfileScreen = () => {
         fetchUserData();
     }, []);
 
+    // Logout current user from Firebase Auth
     const handleLogout = async () => {
         try {
             await signOut(auth);
@@ -36,6 +38,7 @@ const ProfileScreen = () => {
         }
     };
 
+    // Show loading spinner while fetching profile
     if (loading) {
         return (
             <View style={[styles.center, { backgroundColor: colors.background }]}>
@@ -46,12 +49,14 @@ const ProfileScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
+            {/* Display user's username and email */}
             <Text style={[styles.label, { color: colors.text }]}>Username:</Text>
             <Text style={[styles.value, { color: colors.text }]}>{userData?.username || 'N/A'}</Text>
 
             <Text style={[styles.label, { color: colors.text }]}>Email:</Text>
             <Text style={[styles.value, { color: colors.text }]}>{userData?.email || 'N/A'}</Text>
 
+            {/* Logout button */}
             <TouchableOpacity
                 style={[styles.logoutButton, { backgroundColor: colors.primary }]}
                 onPress={handleLogout}
@@ -94,3 +99,4 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
+

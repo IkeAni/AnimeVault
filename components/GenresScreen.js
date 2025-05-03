@@ -4,25 +4,27 @@ import axios from 'axios';
 import { useNavigation, useTheme } from '@react-navigation/native';
 
 const GenresScreen = () => {
-    const [genres, setGenres] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const { colors } = useTheme();
-    const navigation = useNavigation();
+    const [genres, setGenres] = useState([]); // Store list of anime genres
+    const [loading, setLoading] = useState(true); // Loading state while fetching
+    const { colors } = useTheme(); // For theme-based coloring
+    const navigation = useNavigation(); // Navigation hook for screen transitions
 
+    // Fetch genres from Jikan API when screen mounts
     useEffect(() => {
         const fetchGenres = async () => {
             try {
                 const res = await axios.get('https://api.jikan.moe/v4/genres/anime');
-                setGenres(res.data.data);
+                setGenres(res.data.data); // Set genres list
             } catch (err) {
                 console.error('Error fetching genres:', err);
             } finally {
-                setLoading(false);
+                setLoading(false); // Hide loader after API call finishes
             }
         };
         fetchGenres();
     }, []);
 
+    // Show loader while genres are being fetched
     if (loading) {
         return (
             <View style={styles.center}>
@@ -31,12 +33,13 @@ const GenresScreen = () => {
         );
     }
 
+    // Display genre boxes as a grid
     return (
         <FlatList
             contentContainerStyle={styles.list}
             data={genres}
             keyExtractor={(item) => item.mal_id.toString()}
-            numColumns={2}
+            numColumns={2} // Show genres in 2 columns
             renderItem={({ item }) => (
                 <TouchableOpacity
                     style={[styles.genreBox, { backgroundColor: colors.card }]}
@@ -50,6 +53,7 @@ const GenresScreen = () => {
         />
     );
 };
+
 
 const styles = StyleSheet.create({
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },

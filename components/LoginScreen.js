@@ -5,19 +5,23 @@ import { auth } from '../firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged } from 'firebase/auth';
 
 const LoginScreen = () => {
-    const { colors } = useTheme();
+    const { colors } = useTheme(); // Use theme for light/dark mode styling
     const navigation = useNavigation();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
+    // Optional listener in case we want to track auth state changes
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => { });
+        const unsubscribe = onAuthStateChanged(auth, () => { });
         return unsubscribe;
     }, []);
 
+    // Attempt login using Firebase Auth
     const handleLogin = async () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
+            // Navigation to Home happens automatically in AppEntryNavigator when auth state updates
         } catch (error) {
             Alert.alert('Login Error', error.message);
         }
@@ -27,6 +31,7 @@ const LoginScreen = () => {
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <Text style={[styles.title, { color: colors.text }]}>Login to AnimeVault</Text>
 
+            {/* Email Input */}
             <TextInput
                 placeholder="Email"
                 placeholderTextColor="#999"
@@ -37,6 +42,7 @@ const LoginScreen = () => {
                 style={[styles.input, { borderColor: colors.primary, color: colors.text }]}
             />
 
+            {/* Password Input */}
             <TextInput
                 placeholder="Password"
                 placeholderTextColor="#999"
@@ -46,6 +52,7 @@ const LoginScreen = () => {
                 style={[styles.input, { borderColor: colors.primary, color: colors.text }]}
             />
 
+            {/* Login Button */}
             <TouchableOpacity
                 style={[styles.button, { backgroundColor: colors.primary }]}
                 onPress={handleLogin}
@@ -53,6 +60,7 @@ const LoginScreen = () => {
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
 
+            {/* Navigate to Sign Up screen */}
             <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
                 <Text style={[styles.link, { color: colors.primary }]}>
                     Don't have an account? Sign Up
@@ -100,3 +108,4 @@ const styles = StyleSheet.create({
 });
 
 export default LoginScreen;
+

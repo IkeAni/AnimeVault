@@ -1,5 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, StyleSheet, Image, FlatList, ActivityIndicator } from 'react-native';
+import {
+    ScrollView,
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet,
+    Image,
+    FlatList,
+    ActivityIndicator,
+} from 'react-native';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import axios from 'axios';
 import * as Animatable from 'react-native-animatable';
@@ -7,16 +16,19 @@ import * as Animatable from 'react-native-animatable';
 const HomeScreen = () => {
     const navigation = useNavigation();
     const { colors } = useTheme();
+
     const [featuredAnime, setFeaturedAnime] = useState(null);
     const [topAnimeList, setTopAnimeList] = useState([]);
     const [loadingFeatured, setLoadingFeatured] = useState(true);
     const [loadingTop, setLoadingTop] = useState(true);
 
+    // Fetch featured and top anime on component mount
     useEffect(() => {
         fetchFeaturedAnime();
         fetchTopAnime();
     }, []);
 
+    // Pick a random anime from top 10 to feature
     const fetchFeaturedAnime = async () => {
         try {
             const response = await axios.get('https://api.jikan.moe/v4/top/anime?limit=10');
@@ -30,6 +42,7 @@ const HomeScreen = () => {
         }
     };
 
+    // Fetch top 20 anime to display in horizontal scroll
     const fetchTopAnime = async () => {
         try {
             const response = await axios.get('https://api.jikan.moe/v4/top/anime?limit=20');
@@ -41,15 +54,13 @@ const HomeScreen = () => {
         }
     };
 
+    // Renders each anime card in the top anime list
     const renderTopAnimeItem = ({ item }) => (
         <TouchableOpacity
             style={styles.topAnimeItem}
             onPress={() => navigation.navigate('AnimeDetails', { animeId: item.mal_id })}
         >
-            <Image
-                source={{ uri: item.images.jpg.image_url }}
-                style={styles.topAnimeImage}
-            />
+            <Image source={{ uri: item.images.jpg.image_url }} style={styles.topAnimeImage} />
             <Text style={[styles.topAnimeTitle, { color: colors.text }]} numberOfLines={2}>
                 {item.title}
             </Text>
@@ -60,16 +71,14 @@ const HomeScreen = () => {
         <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
             <Text style={[styles.title, { color: colors.text }]}>Discover trending anime 🎌</Text>
 
+            {/* Featured Anime Section */}
             <View style={styles.featuredContainer}>
                 {loadingFeatured ? (
                     <ActivityIndicator size="large" color={colors.primary} />
                 ) : featuredAnime ? (
                     <>
                         <Text style={[styles.featuredTitle, { color: colors.text }]}>Featured Anime</Text>
-                        <Image
-                            source={{ uri: featuredAnime.images.jpg.image_url }}
-                            style={styles.featuredImage}
-                        />
+                        <Image source={{ uri: featuredAnime.images.jpg.image_url }} style={styles.featuredImage} />
                         <Text style={[styles.featuredName, { color: colors.text }]}>
                             {featuredAnime.title}
                         </Text>
@@ -87,7 +96,7 @@ const HomeScreen = () => {
                 )}
             </View>
 
-            {/* Trending Anime Section */}
+            {/* Top Anime List Section */}
             <View style={{ marginTop: 40 }}>
                 <Text style={[styles.topAnimeHeading, { color: colors.text }]}>Top Trending Anime</Text>
 

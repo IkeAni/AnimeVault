@@ -16,15 +16,17 @@ import { doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 
 const AnimeDetailsScreen = ({ route }) => {
     const { animeId } = route.params;
-    const [animeDetails, setAnimeDetails] = useState(null);
-    const [isFavorite, setIsFavorite] = useState(false);
+    const [animeDetails, setAnimeDetails] = useState(null); // Holds fetched anime data
+    const [isFavorite, setIsFavorite] = useState(false);    // Used to check if anime is already favorited
     const { colors } = useTheme();
     const navigation = useNavigation();
 
+    // Fetch anime info on mount or if animeId changes
     useEffect(() => {
         fetchAnimeDetails();
     }, [animeId]);
 
+    // Call Jikan API to get anime details and check if it's favorited
     const fetchAnimeDetails = async () => {
         try {
             const response = await fetch(`https://api.jikan.moe/v4/anime/${animeId}`);
@@ -38,10 +40,12 @@ const AnimeDetailsScreen = ({ route }) => {
         }
     };
 
+    // Check Firestore to see if this anime is in user's favorites
     const checkIfFavorite = async (anime) => {
         try {
             const user = auth.currentUser;
             if (!user) return;
+
             const favoriteRef = doc(db, 'users', user.uid, 'favorites', anime.mal_id.toString());
             const docSnap = await getDoc(favoriteRef);
             setIsFavorite(docSnap.exists());
@@ -50,6 +54,7 @@ const AnimeDetailsScreen = ({ route }) => {
         }
     };
 
+    // Handles adding or removing anime from favorites in Firestore
     const toggleFavorite = async () => {
         try {
             const user = auth.currentUser;
@@ -75,6 +80,7 @@ const AnimeDetailsScreen = ({ route }) => {
         }
     };
 
+    // Opens trailer link in user's browser if available
     const openTrailer = () => {
         if (animeDetails?.trailer?.url) {
             Linking.openURL(animeDetails.trailer.url);
@@ -83,6 +89,7 @@ const AnimeDetailsScreen = ({ route }) => {
         }
     };
 
+    // Show loading state while data is being fetched
     if (!animeDetails) {
         return (
             <View style={styles.loadingContainer}>
@@ -94,18 +101,25 @@ const AnimeDetailsScreen = ({ route }) => {
 
     return (
         <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
+            {/* Anime banner image */}
             <Image source={{ uri: animeDetails.images.jpg.image_url }} style={styles.image} />
+
+            {/* Main title */}
             <Text style={[styles.title, { color: colors.text }]}>{animeDetails.title}</Text>
+
+            {/* Anime synopsis */}
             <Text style={[styles.description, { color: colors.text }]}>
                 {animeDetails.synopsis || 'No description available.'}
             </Text>
 
+            {/* Basic metadata */}
             <Text style={[styles.info, { color: colors.text }]}>Episodes: {animeDetails.episodes ?? 'Unknown'}</Text>
             <Text style={[styles.info, { color: colors.text }]}>Status: {animeDetails.status ?? 'Unknown'}</Text>
             <Text style={[styles.info, { color: colors.text }]}>Rating: {animeDetails.rating ?? 'Unknown'}</Text>
             <Text style={[styles.info, { color: colors.text }]}>Release Year: {animeDetails.year ?? 'Unknown'}</Text>
             <Text style={[styles.info, { color: colors.text }]}>Score: {animeDetails.score ?? 'N/A'}</Text>
 
+            {/* Genre tags that navigate to genre view */}
             <Text style={[styles.info, { color: colors.text }]}>Genres:</Text>
             <View style={styles.genresContainer}>
                 {animeDetails.genres?.map((genre, index) => (
@@ -126,6 +140,7 @@ const AnimeDetailsScreen = ({ route }) => {
                 ))}
             </View>
 
+            {/* Watch trailer if available */}
             {animeDetails?.trailer?.url && (
                 <TouchableOpacity
                     style={[styles.trailerButton, { backgroundColor: colors.primary }]}
@@ -135,6 +150,7 @@ const AnimeDetailsScreen = ({ route }) => {
                 </TouchableOpacity>
             )}
 
+            {/* Favorite toggle button */}
             <TouchableOpacity
                 style={[styles.favoriteButton, { backgroundColor: colors.primary }]}
                 onPress={toggleFavorite}
@@ -155,6 +171,7 @@ const styles = StyleSheet.create({
     title: { fontSize: 26, fontWeight: 'bold', marginBottom: 10 },
     description: { fontSize: 16, marginBottom: 15 },
     info: { fontSize: 16, marginBottom: 5 },
+
     genresContainer: {
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -164,6 +181,7 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         marginRight: 8,
     },
+
     trailerButton: {
         marginTop: 20,
         paddingVertical: 12,
@@ -189,3 +207,4 @@ const styles = StyleSheet.create({
 });
 
 export default AnimeDetailsScreen;
+

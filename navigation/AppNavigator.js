@@ -1,3 +1,4 @@
+// Main app-level navigation stack for authenticated users
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DefaultTheme, DarkTheme, useNavigation } from '@react-navigation/native';
@@ -12,6 +13,7 @@ import GenreAnimeListScreen from '../components/GenreAnimeListScreen';
 
 const Stack = createNativeStackNavigator();
 
+// Light and dark theme customization
 const LightTheme = {
     ...DefaultTheme,
     colors: {
@@ -34,7 +36,7 @@ const CustomDarkTheme = {
     },
 };
 
-// Header Right Icon
+// Reusable search icon for headers
 const HeaderIconsRight = ({ navigation }) => (
     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <TouchableOpacity onPress={() => navigation.navigate('Search')} style={{ marginRight: 10 }}>

@@ -1,9 +1,11 @@
+// Bottom tab navigation between main sections of the app
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import { View, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
+// Screens for each tab
 import HomeScreen from '../components/HomeScreen';
 import FavoritesScreen from '../components/FavoritesScreen';
 import ProfileScreen from '../components/ProfileScreen';
@@ -11,7 +13,7 @@ import SettingsScreen from '../components/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 
-// Search icon for Home header only
+// Custom search icon shown in Home screen's header
 const HeaderSearchIcon = () => {
     const navigation = useNavigation();
     return (

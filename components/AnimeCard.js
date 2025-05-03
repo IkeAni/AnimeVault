@@ -3,12 +3,15 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation, useTheme } from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 
+// Reusable card component for displaying an anime item
 const AnimeCard = ({ title, imageUrl, onAddFavorite, onRemoveFavorite, isFavoriteScreen, animeId }) => {
     const navigation = useNavigation();
     const { colors } = useTheme();
 
     return (
+        // Animatable view for fade-in effect on render
         <Animatable.View animation="fadeInUp" duration={500} style={[styles.card, { backgroundColor: colors.card }]}>
+            {/* Navigate to AnimeDetails screen when image/title is pressed */}
             <TouchableOpacity
                 style={{ alignItems: 'center' }}
                 onPress={() => {
@@ -21,12 +24,14 @@ const AnimeCard = ({ title, imageUrl, onAddFavorite, onRemoveFavorite, isFavorit
                 <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
             </TouchableOpacity>
 
+            {/* Conditionally show "Add to Favorites" if not on the Favorites screen */}
             {onAddFavorite && !isFavoriteScreen && (
                 <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={onAddFavorite}>
                     <Text style={styles.buttonText}>Add to Favorites</Text>
                 </TouchableOpacity>
             )}
 
+            {/* Conditionally show "Remove" if on the Favorites screen */}
             {onRemoveFavorite && isFavoriteScreen && (
                 <TouchableOpacity style={[styles.button, { backgroundColor: colors.primary }]} onPress={onRemoveFavorite}>
                     <Text style={styles.buttonText}>Remove</Text>
@@ -73,3 +78,4 @@ const styles = StyleSheet.create({
 });
 
 export default AnimeCard;
+
