@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert, Linking } from 'react-native';
-import { useTheme } from '@react-navigation/native';
+import {
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    ScrollView,
+    ActivityIndicator,
+    TouchableOpacity,
+    Alert,
+    Linking,
+} from 'react-native';
+import { useTheme, useNavigation } from '@react-navigation/native';
 import { db, auth } from '../firebase';
 import { doc, setDoc, deleteDoc, getDoc } from 'firebase/firestore';
 
@@ -9,6 +19,7 @@ const AnimeDetailsScreen = ({ route }) => {
     const [animeDetails, setAnimeDetails] = useState(null);
     const [isFavorite, setIsFavorite] = useState(false);
     const { colors } = useTheme();
+    const navigation = useNavigation();
 
     useEffect(() => {
         fetchAnimeDetails();
@@ -94,17 +105,40 @@ const AnimeDetailsScreen = ({ route }) => {
             <Text style={[styles.info, { color: colors.text }]}>Rating: {animeDetails.rating ?? 'Unknown'}</Text>
             <Text style={[styles.info, { color: colors.text }]}>Release Year: {animeDetails.year ?? 'Unknown'}</Text>
             <Text style={[styles.info, { color: colors.text }]}>Score: {animeDetails.score ?? 'N/A'}</Text>
-            <Text style={[styles.info, { color: colors.text }]}>
-                Genres: {animeDetails.genres?.map(genre => genre.name).join(', ') || 'Unknown'}
-            </Text>
+
+            <Text style={[styles.info, { color: colors.text }]}>Genres:</Text>
+            <View style={styles.genresContainer}>
+                {animeDetails.genres?.map((genre, index) => (
+                    <TouchableOpacity
+                        key={genre.mal_id}
+                        onPress={() =>
+                            navigation.navigate('GenreAnimeList', {
+                                genreId: genre.mal_id,
+                                genreName: genre.name,
+                            })
+                        }
+                    >
+                        <Text style={[styles.genreLink, { color: colors.primary }]}>
+                            {genre.name}
+                            {index < animeDetails.genres.length - 1 ? ', ' : ''}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
 
             {animeDetails?.trailer?.url && (
-                <TouchableOpacity style={[styles.trailerButton, { backgroundColor: colors.primary }]} onPress={openTrailer}>
+                <TouchableOpacity
+                    style={[styles.trailerButton, { backgroundColor: colors.primary }]}
+                    onPress={openTrailer}
+                >
                     <Text style={styles.trailerButtonText}>Watch Trailer</Text>
                 </TouchableOpacity>
             )}
 
-            <TouchableOpacity style={[styles.favoriteButton, { backgroundColor: colors.primary }]} onPress={toggleFavorite}>
+            <TouchableOpacity
+                style={[styles.favoriteButton, { backgroundColor: colors.primary }]}
+                onPress={toggleFavorite}
+            >
                 <Text style={styles.favoriteButtonText}>
                     {isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
                 </Text>
@@ -121,11 +155,37 @@ const styles = StyleSheet.create({
     title: { fontSize: 26, fontWeight: 'bold', marginBottom: 10 },
     description: { fontSize: 16, marginBottom: 15 },
     info: { fontSize: 16, marginBottom: 5 },
-    trailerButton: { marginTop: 20, paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
-    trailerButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-    favoriteButton: { marginTop: 20, paddingVertical: 12, borderRadius: 10, alignItems: 'center' },
-    favoriteButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+    genresContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        marginBottom: 10,
+    },
+    genreLink: {
+        textDecorationLine: 'underline',
+        marginRight: 8,
+    },
+    trailerButton: {
+        marginTop: 20,
+        paddingVertical: 12,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    trailerButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    favoriteButton: {
+        marginTop: 20,
+        paddingVertical: 12,
+        borderRadius: 10,
+        alignItems: 'center',
+    },
+    favoriteButtonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
 });
 
 export default AnimeDetailsScreen;
-

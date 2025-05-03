@@ -11,21 +11,25 @@ const SignUpScreen = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [username, setUsername] = useState('');
 
     const handleSignUp = async () => {
+        if (!email || !password || !username) {
+            Alert.alert('Missing Fields', 'Please fill in all fields.');
+            return;
+        }
+
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
             const user = userCredential.user;
 
-            // Optionally save user to Firestore
             await setDoc(doc(db, 'users', user.uid), {
                 email: user.email,
+                username,
                 createdAt: new Date().toISOString(),
-                favorites: [],
             });
 
             Alert.alert('Account created!', 'You can now log in.');
-            navigation.goBack();
         } catch (error) {
             Alert.alert('Sign Up Error', error.message);
         }
@@ -34,6 +38,15 @@ const SignUpScreen = () => {
     return (
         <View style={[styles.container, { backgroundColor: colors.background }]}>
             <Text style={[styles.title, { color: colors.text }]}>Create an Account</Text>
+
+            <TextInput
+                placeholder="Username"
+                placeholderTextColor="#999"
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+                style={[styles.input, { borderColor: colors.primary, color: colors.text }]}
+            />
 
             <TextInput
                 placeholder="Email"
