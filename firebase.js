@@ -1,8 +1,8 @@
 import { initializeApp } from 'firebase/app';
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
+// Your Firebase config
 const firebaseConfig = {
     apiKey: "AIzaSyBqX76TcPIH3HeGqc1YlnSOXLCt04bJc_s",
     authDomain: "animevault-6cb2e.firebaseapp.com",
@@ -12,15 +12,13 @@ const firebaseConfig = {
     appId: "1:231303616026:web:9f844d55519f5fe2afa3a3"
 };
 
-// Initialize Firebase app
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Use persistent auth (so login survives app restarts)
-const auth = initializeAuth(app, {
-    persistence: getReactNativePersistence(AsyncStorage),
-});
+// ✅ Use default memory persistence for Expo Go
+const auth = getAuth(app);
 
-// Initialize Firestore
+// Firestore works the same
 const db = getFirestore(app);
 
 export { auth, db };
